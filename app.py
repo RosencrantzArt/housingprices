@@ -1,16 +1,56 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import matplotlib.pyplot as plt
+import os
 import seaborn as sns
+import matplotlib.pyplot as plt
+import nbformat
+from nbconvert import PythonExporter
+from nbconvert.preprocessors import ExecutePreprocessor
 
-model = joblib.load("outputs/models/best_model.pkl")  # ändra vid behov
-data = pd.read_csv("outputs/datasets/cleaned/TrainSetCleaned.csv")
+
+notebook_path = "/workspaces/housingprices/jupyter_notebooks/Modeling and Evaluation - Predict Price.ipynb"
+data_path = "/workspaces/housingprices/outputs/datasets/cleaned/TrainSetCleaned.csv"
+model_path = "/workspaces/housingprices/outputs/models/best_model.pkl"
+
+
+if os.path.exists(notebook_path):
+    with open(notebook_path, "r") as f:
+        nb_content = nbformat.read(f, as_version=4)
+
+
+    ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
+    try:
+        ep.preprocess(nb_content, {'metadata': {'path': '/workspaces/housingprices/jupyter_notebooks/'}})
+        st.success("Notebook executed successfully!")
+    except Exception as e:
+        st.error(f"Error executing notebook: {e}")
+        st.stop()
+else:
+    st.error(f"The notebook {notebook_path} doesn't exist. Please check the file path.")
+    st.stop()
+
+
+if os.path.exists(model_path):
+    model = joblib.load(model_path)
+else:
+    st.error(f"The model file {model_path} doesn't exist. Please check the file path.")
+    st.stop()
+
+if os.path.exists(data_path):
+    data = pd.read_csv(data_path)
+else:
+    st.error(f"The data file {data_path} doesn't exist. Please ensure the data is saved correctly.")
+    st.stop()
 
 st.title("Heritage Housing Price Predictor")
-st.write("Explore house attributes and predict sale prices in Ames, Iowa.")
+st.write("""
+    This app allows you to input various house attributes, such as the overall quality, 
+    living area, garage size, basement area, and year built, and predict the sale price 
+    of a house in Ames, Iowa. The model was trained using a dataset of real estate data.
+""")
 
-st.sidebar.header(" Enter house features")
+st.sidebar.header("Enter house features")
 
 def user_input():
     overall_qual = st.sidebar.slider("Overall Quality", 1, 10, 5)
@@ -31,12 +71,26 @@ def user_input():
 input_df = user_input()
 
 if st.button("Predict Sale Price"):
-    prediction = model.predict(input_df)
-    st.success(f"💰 Predicted Sale Price: ${int(prediction[0]):,}")
+    try:
+        prediction = model.predict(input_df)  # Gör förutsägelsen
+        st.success(f"Predicted Sale Price: ${int(prediction[0]):,}")  # Visa resultatet
+    except Exception as e:
+        st.error(f"Error making prediction: {e}")
 
-st.header("Correlation Heatmap")
 
-corr = data.corr(numeric_only=True)
-fig, ax = plt.subplots(figsize=(10, 8))
-sns.heatmap(corr[["SalePrice"]].sort_values(by="SalePrice", ascending=False), annot=True, cmap="coolwarm", ax=ax)
-st.pyplot(fig)
+if 'SalePrice' in data.columns:
+    st.header("Correlation Heatmap")
+    feature = st.selectbox("Choose feature to compare with SalePrice", data.columns)
+
+    corr = data.corr(numeric_only=True)
+    if feature in corr.columns:
+        try:
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(corr[[feature]].sort_values(by=feature, ascending=False), annot=True, cmap="coolwarm", ax=ax)
+            st.pyplot(fig)
+        except Exception as e:
+            st.error(f"Error plotting correlation heatmap: {e}")
+    else:
+        st.error(f"Feature {feature} not found in the data.")
+else:
+    st.error("The 'SalePrice' column is not found in the data.")
