@@ -10,11 +10,8 @@ This project aims to predict the sale prices of houses in Ames, Iowa, based on t
 2. Install the necessary dependencies by running the following command:
 pip3 install -r requirements.txt
 
-markdown
-Kopiera
-Redigera
-3. Open the Jupyter notebook directory and start analyzing the dataset or training the model.
-4. Run the scripts for data cleaning, feature engineering, model training, and validation.
+1.Open the Jupyter notebook directory and start analyzing the dataset or training the model.
+2 Run the scripts for data cleaning, feature engineering, model training, and validation.
 
 ## Dataset Content
 
