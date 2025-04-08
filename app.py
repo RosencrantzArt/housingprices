@@ -9,7 +9,7 @@ from nbconvert import PythonExporter
 from nbconvert.preprocessors import ExecutePreprocessor
 
 
-notebook_path = "/workspaces/housingprices/jupyter_notebooks/Modeling and Evaluation - Predict Price.ipynb"
+notebook_path = "/workspaces/housingprices/jupyter_notebooks/modeling_evaluation_predict_price.ipynb"
 data_path = "/workspaces/housingprices/outputs/datasets/cleaned/TrainSetCleaned.csv"
 model_path = "/workspaces/housingprices/outputs/models/best_model.pkl"
 
@@ -72,8 +72,8 @@ input_df = user_input()
 
 if st.button("Predict Sale Price"):
     try:
-        prediction = model.predict(input_df)  # Gör förutsägelsen
-        st.success(f"Predicted Sale Price: ${int(prediction[0]):,}")  # Visa resultatet
+        prediction = model.predict(input_df)  
+        st.success(f"Predicted Sale Price: ${int(prediction[0]):,}")  #
     except Exception as e:
         st.error(f"Error making prediction: {e}")
 
