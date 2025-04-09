@@ -3,22 +3,34 @@ import pandas as pd
 import joblib
 import os
 
-model_path = "./outputs/models/best_model.pkl"
-data_path = "./outputs/datasets/cleaned/TrainSetCleaned.csv"
+
+model_path = os.path.join(os.getcwd(), "outputs", "models", "best_model.pkl")
+data_path = os.path.join(os.getcwd(), "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
+
 
 st.set_page_config(page_title="House Price Predictor", layout="wide")
-st.title(" House Price Prediction App")
+st.title("House Price Prediction App")
+
 
 if not os.path.exists(model_path):
-    st.error("Model could't be found try another way.")
+    st.error(f"Model couldn't be found. Trying to load from: {model_path}")
     st.stop()
 
-model = joblib.load(model_path)
+
+try:
+    model = joblib.load(model_path)
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
+
 
 if os.path.exists(data_path):
     df = pd.read_csv(data_path)
-    st.subheader("Exampel of training the data:")
+    st.subheader("Example of training data:")
     st.dataframe(df.head())
+else:
+    st.error(f"Data file could not be found: {data_path}")
+    st.stop()
 
 
 st.subheader("Make your own prediction:")
@@ -33,7 +45,6 @@ with col2:
     garage_cars = st.slider("Garage cars", 0, 5, 2)
     total_bsmt_sf = st.number_input("Basement square feet (TotalBsmtSF)", min_value=0, max_value=3000, value=800)
 
-
 if st.button("Predict price"):
     input_df = pd.DataFrame([{
         "GrLivArea": gr_liv_area,
@@ -44,6 +55,7 @@ if st.button("Predict price"):
 
     try:
         prediction = model.predict(input_df)[0]
-        st.success(f"Predict price: ${prediction:,.0f}")
+        st.success(f"Predicted price: ${prediction:,.0f}")
     except Exception as e:
-        st.error(f"Something went wrong In the pridiction: {e}")
+        st.error(f"Something went wrong in the prediction: {e}")
+
