@@ -4,8 +4,9 @@ import joblib
 import os
 
 
-model_path = os.path.join(os.getcwd(), "outputs", "models", "best_model.pkl")
-data_path = os.path.join(os.getcwd(), "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
+current_dir = os.getcwd()
+model_path = os.path.join(current_dir, "outputs", "models", "best_model.pkl")
+data_path = os.path.join(current_dir, "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
 
 
 st.set_page_config(page_title="House Price Predictor", layout="wide")
@@ -58,4 +59,3 @@ if st.button("Predict price"):
         st.success(f"Predicted price: ${prediction:,.0f}")
     except Exception as e:
         st.error(f"Something went wrong in the prediction: {e}")
-
