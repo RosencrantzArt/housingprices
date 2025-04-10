@@ -5,24 +5,27 @@ import os
 
 
 current_dir = os.getcwd()
+st.write(f"Current working directory: {current_dir}")
+
 model_path = os.path.join(current_dir, "outputs", "models", "best_model.pkl")
 data_path = os.path.join(current_dir, "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
 
-
-st.set_page_config(page_title="House Price Predictor", layout="wide")
-st.title("House Price Prediction App")
+st.write(f"Trying to load model from: {model_path}")
 
 
 if not os.path.exists(model_path):
     st.error(f"Model couldn't be found. Trying to load from: {model_path}")
     st.stop()
 
-
+# Ladda modellen
 try:
     model = joblib.load(model_path)
 except Exception as e:
-    st.error(f"Error loading model: {e}")
-    st.stop()
+    import traceback
+    print("Error loading model:")
+    traceback.print_exc()
+    model = None
+
 
 
 if os.path.exists(data_path):
