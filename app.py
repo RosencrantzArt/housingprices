@@ -8,6 +8,7 @@ current_dir = os.getcwd()
 st.write(f"Current working directory: {current_dir}")
 
 model_path = os.path.join(current_dir, "outputs", "models", "best_model.pkl")
+st.write(f"Trying to load model from: {model_path}")
 data_path = os.path.join(current_dir, "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
 
 st.write(f"Trying to load model from: {model_path}")
@@ -17,7 +18,7 @@ if not os.path.exists(model_path):
     st.error(f"Model couldn't be found. Trying to load from: {model_path}")
     st.stop()
 
-# Ladda modellen
+
 try:
     model = joblib.load(model_path)
 except Exception as e:
