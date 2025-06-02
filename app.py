@@ -7,50 +7,62 @@ import os
 current_dir = os.getcwd()
 st.write(f"Current working directory: {current_dir}")
 
+
 model_path = os.path.join(current_dir, "outputs", "models", "best_model.pkl")
 st.write(f"Trying to load model from: {model_path}")
-data_path = os.path.join(current_dir, "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
 
-st.write(f"Trying to load model from: {model_path}")
+
+models_dir = os.path.join(current_dir, "outputs", "models")
+if os.path.exists(models_dir):
+    st.write("Files in outputs/models:", os.listdir(models_dir))
+else:
+    st.write("Directory outputs/models does not exist.")
+
+data_path = os.path.join(current_dir, "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
+st.write(f"Example data path: {data_path}")
 
 
 if not os.path.exists(model_path):
-    st.error(f"Model couldn't be found. Trying to load from: {model_path}")
+    st.error(f"Model couldn't be found at: {model_path}")
     st.stop()
-
 
 try:
     model = joblib.load(model_path)
+    st.success("Model loaded successfully!")
 except Exception as e:
     import traceback
-    print("Error loading model:")
+    st.error(f"Error loading model: {e}")
     traceback.print_exc()
     model = None
-
-
+    st.stop()
 
 if os.path.exists(data_path):
     df = pd.read_csv(data_path)
     st.subheader("Example of training data:")
     st.dataframe(df.head())
 else:
-    st.error(f"Data file could not be found: {data_path}")
-    st.stop()
+    st.warning(f"Data file not found at: {data_path}")
 
 
 st.subheader("Make your own prediction:")
 
 col1, col2 = st.columns(2)
-
 with col1:
-    gr_liv_area = st.number_input("Above ground living area (GrLivArea)", min_value=500, max_value=5000, value=1500)
+    gr_liv_area = st.number_input(
+        "Above ground living area (GrLivArea)", 
+        min_value=500, max_value=5000, value=1500
+    )
     overall_qual = st.slider("Overall Quality (1–10)", 1, 10, 5)
 
 with col2:
     garage_cars = st.slider("Garage cars", 0, 5, 2)
-    total_bsmt_sf = st.number_input("Basement square feet (TotalBsmtSF)", min_value=0, max_value=3000, value=800)
+    total_bsmt_sf = st.number_input(
+        "Basement square feet (TotalBsmtSF)", 
+        min_value=0, max_value=3000, value=800
+    )
 
 if st.button("Predict price"):
+   
     input_df = pd.DataFrame([{
         "GrLivArea": gr_liv_area,
         "OverallQual": overall_qual,
