@@ -55,7 +55,7 @@ with col1:
     overall_qual = st.slider("Overall Quality (1–10)", 1, 10, 5)
 
 with col2:
-    garage_cars = st.slider("Garage cars", 0, 5, 2)
+    garage_area = st.slider("GarageArea", 0, 5, 2)
     total_bsmt_sf = st.number_input(
         "Basement square feet (TotalBsmtSF)", 
         min_value=0, max_value=3000, value=800
@@ -66,7 +66,7 @@ if st.button("Predict price"):
     input_df = pd.DataFrame([{
         "GrLivArea": gr_liv_area,
         "OverallQual": overall_qual,
-        "GarageCars": garage_cars,
+        "GarageArea": garage_area,
         "TotalBsmtSF": total_bsmt_sf
     }])
 
