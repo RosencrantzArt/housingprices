@@ -6,9 +6,9 @@ import os
 
 os.makedirs('outputs/models', exist_ok=True)
 
-data = pd.read_csv('HousePrices.csv')
+data = pd.read_csv('outputs/datasets/collection/HousePrices.csv')
 
-X = data[['GrLivArea', 'OverallQual', 'GarageCars', 'TotalBsmtSF']]
+X = data[['GrLivArea', 'OverallQual', 'GarageArea', 'TotalBsmtSF']]
 y = data['SalePrice']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
