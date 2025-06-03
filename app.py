@@ -4,31 +4,36 @@ import joblib
 import os
 
 
+st.set_page_config(page_title="House Price Predictor", page_icon="🏠")
+
+
+st.title("🏡 House Price Predictor")
+st.write("Use this app to predict house prices based on selected property features.")
+
+
+st.sidebar.title("About the App")
+st.sidebar.info(
+    """
+    This application uses a machine learning model to predict house prices 
+    based on property data from Ames, Iowa.
+
+    Enter values for various features and get an instant price prediction.
+    """
+)
+st.sidebar.markdown("---")
+st.sidebar.write("Built with ❤️ using Streamlit.")
+
 current_dir = os.getcwd()
-st.write(f"Current working directory: {current_dir}")
-
-
 model_path = os.path.join(current_dir, "outputs", "models", "best_model.pkl")
-st.write(f"Trying to load model from: {model_path}")
-
-
-models_dir = os.path.join(current_dir, "outputs", "models")
-if os.path.exists(models_dir):
-    st.write("Files in outputs/models:", os.listdir(models_dir))
-else:
-    st.write("Directory outputs/models does not exist.")
-
 data_path = os.path.join(current_dir, "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
-st.write(f"Example data path: {data_path}")
 
 
 if not os.path.exists(model_path):
-    st.error(f"Model couldn't be found at: {model_path}")
+    st.error(f"Model not found at: {model_path}")
     st.stop()
 
 try:
     model = joblib.load(model_path)
-    st.success("Model loaded successfully!")
 except Exception as e:
     import traceback
     st.error(f"Error loading model: {e}")
@@ -36,33 +41,35 @@ except Exception as e:
     model = None
     st.stop()
 
+
 if os.path.exists(data_path):
     df = pd.read_csv(data_path)
-    st.subheader("Example of training data:")
+    st.subheader("📊 Example of training data:")
     st.dataframe(df.head())
 else:
     st.warning(f"Data file not found at: {data_path}")
 
 
-st.subheader("Make your own prediction:")
+st.subheader("🔍 Make Your Own Prediction:")
 
 col1, col2 = st.columns(2)
+
 with col1:
     gr_liv_area = st.number_input(
-        "Above ground living area (GrLivArea)", 
+        "Above ground living area (GrLivArea)",
         min_value=500, max_value=5000, value=1500
     )
     overall_qual = st.slider("Overall Quality (1–10)", 1, 10, 5)
 
 with col2:
-    garage_area = st.slider("GarageArea", 0, 5, 2)
+    garage_area = st.slider("Garage Area (car capacity)", 0, 5, 2)
     total_bsmt_sf = st.number_input(
-        "Basement square feet (TotalBsmtSF)", 
+        "Basement square feet (TotalBsmtSF)",
         min_value=0, max_value=3000, value=800
     )
 
-if st.button("Predict price"):
-   
+
+if st.button("Predict Price"):
     input_df = pd.DataFrame([{
         "GrLivArea": gr_liv_area,
         "OverallQual": overall_qual,
@@ -72,6 +79,6 @@ if st.button("Predict price"):
 
     try:
         prediction = model.predict(input_df)[0]
-        st.success(f"Predicted price: ${prediction:,.0f}")
+        st.success(f"Predicted house price: ${prediction:,.0f}")
     except Exception as e:
-        st.error(f"Something went wrong in the prediction: {e}")
+        st.error(f"Something went wrong with the prediction: {e}")
