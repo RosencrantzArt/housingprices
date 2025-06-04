@@ -95,3 +95,5 @@ The dashboard will consist of the following pages and content:
 - Dashboard and visualizations were inspired by [Data Science Tutorials](https://www.datacamp.com/community/tutorials).
 
 ## Acknowledgements
+
+-Thanks to swedish slack channel
