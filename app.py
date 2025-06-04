@@ -9,7 +9,6 @@ from sklearn.metrics import r2_score
 
 st.set_page_config(page_title="House Price Predictor", page_icon="🏠")
 
-
 current_dir = os.getcwd()
 model_path = os.path.join(current_dir, "outputs", "models", "best_model.pkl")
 data_path = os.path.join(current_dir, "outputs", "datasets", "cleaned", "TrainSetCleaned.csv")
@@ -27,7 +26,6 @@ except Exception as e:
     traceback.print_exc()
     st.stop()
 
-
 if os.path.exists(data_path):
     df = pd.read_csv(data_path)
 else:
@@ -42,7 +40,6 @@ menu = st.sidebar.radio(
 st.sidebar.markdown("---")
 st.sidebar.info("Built with ❤️ using Streamlit.")
 
-
 if menu == "Project Summary":
     st.title("📑 Project Summary")
     st.write("""
@@ -54,7 +51,6 @@ if menu == "Project Summary":
         st.subheader("📊 Example of training data:")
         st.dataframe(df.head())
 
-
 elif menu == "Feature Correlation":
     st.title("📊 Feature Correlation")
     if df is not None:
@@ -65,7 +61,6 @@ elif menu == "Feature Correlation":
         st.pyplot(fig)
     else:
         st.warning("No data file found to display correlation.")
-
 
 elif menu == "Predicted Prices":
     st.title("🔍 Make Your Own Prediction")
@@ -112,7 +107,6 @@ elif menu == "Hypothesis Validation":
     else:
         st.warning("No data file found for hypothesis validation.")
 
-
 elif menu == "Model Performance":
     st.title("📊 Model Performance")
     if df is not None:
@@ -121,5 +115,24 @@ elif menu == "Model Performance":
         y_pred = model.predict(X)
         score = r2_score(y, y_pred)
         st.write(f"R²-score on training data: **{score:.2f}**")
+
+        st.subheader("📉 Residual Plot")
+        residuals = y - y_pred
+        fig, ax = plt.subplots()
+        sns.scatterplot(x=y_pred, y=residuals, ax=ax)
+        ax.axhline(0, linestyle='--', color='red')
+        ax.set_xlabel("Predicted Price")
+        ax.set_ylabel("Residuals")
+        ax.set_title("Residuals vs Predicted Price")
+        st.pyplot(fig)
+
+        st.subheader("📊 Actual vs Predicted Prices")
+        fig2, ax2 = plt.subplots()
+        sns.histplot(y, color="blue", label="Actual Prices", kde=True, ax=ax2)
+        sns.histplot(y_pred, color="orange", label="Predicted Prices", kde=True, ax=ax2)
+        ax2.legend()
+        ax2.set_title("Distribution of Actual vs Predicted Prices")
+        st.pyplot(fig2)
+
     else:
         st.warning("No data file found to calculate performance.")
